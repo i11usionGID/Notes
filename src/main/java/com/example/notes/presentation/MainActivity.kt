@@ -1,10 +1,12 @@
 package com.example.notes.presentation
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.example.notes.presentation.screens.creation.CreateNoteScreen
+import com.example.notes.presentation.screens.edititng.EditNoteScreen
 import com.example.notes.presentation.ui.theme.NotesTheme
 
 class MainActivity : ComponentActivity() {
@@ -13,7 +15,17 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             NotesTheme {
-                CreateNoteScreen()
+                EditNoteScreen(
+                   noteId = 5,
+                    onFinished = {
+                        Log.d("MainActivity", "onFinished")
+                    }
+                )
+//                CreateNoteScreen(
+//                    onFinished = {
+//                        Log.d("MainActivity", "onFinished")
+//                    }
+//                )
 //                NotesScreen(
 //                    onNoteClick = {
 //                        Log.d("MainActivity", "onNoteClick $it")

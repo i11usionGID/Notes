@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.example.notes.presentation.screens.creation
+package com.example.notes.presentation.screens.edititng
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -33,23 +34,26 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.notes.presentation.utils.DateFormatter
 
 @Composable
-fun CreateNoteScreen(
+fun EditNoteScreen(
     modifier: Modifier = Modifier,
-    viewModel: CreateNoteViewModel = viewModel(),
+    noteId: Int,
+    viewModel: EditingNoteViewModel = viewModel {
+        EditingNoteViewModel(noteId)
+    },
     onFinished: () -> Unit
 ) {
 
     val state = viewModel.state.collectAsState()
 
     when (val currentState = state.value) {
-        is CreateNoteState.Creation -> {
+        is EditNoteState.Editing -> {
             Scaffold(
                 modifier = modifier,
                 topBar = {
                     TopAppBar(
                         title = {
                             Text(
-                                text = "Create Note",
+                                text = "Edit Note",
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onBackground
@@ -57,14 +61,26 @@ fun CreateNoteScreen(
                         },
                         colors = TopAppBarDefaults.topAppBarColors(
                             containerColor = Color.Transparent,
-                            navigationIconContentColor = MaterialTheme.colorScheme.onSurface
+                            navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
+                            actionIconContentColor = MaterialTheme.colorScheme.onSurface
                         ),
+                        actions = {
+                            Icon(
+                                modifier = Modifier
+                                    .padding(end = 16.dp)
+                                    .clickable {
+                                        viewModel.processCommand(EditNoteCommand.Delete)
+                                    },
+                                imageVector = Icons.Outlined.Delete,
+                                contentDescription = "Delete note"
+                            )
+                        },
                         navigationIcon = {
                             Icon(
                                 modifier = Modifier
                                     .padding(start = 16.dp, end = 8.dp)
                                     .clickable {
-                                        viewModel.processCommand(CreateNoteCommand.Back)
+                                        viewModel.processCommand(EditNoteCommand.Back)
                                     },
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                 contentDescription = "Back"
@@ -80,8 +96,8 @@ fun CreateNoteScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 8.dp),
-                        value = currentState.title,
-                        onValueChange = { viewModel.processCommand(CreateNoteCommand.InputTitle(it)) },
+                        value = currentState.note.title,
+                        onValueChange = { viewModel.processCommand(EditNoteCommand.InputTitle(it)) },
                         colors = TextFieldDefaults.colors(
                             focusedContainerColor = Color.Transparent,
                             unfocusedContainerColor = Color.Transparent,
@@ -104,7 +120,7 @@ fun CreateNoteScreen(
                     )
                     Text(
                         modifier = Modifier.padding(horizontal = 24.dp),
-                        text = DateFormatter.formattedCurrentDate(),
+                        text = DateFormatter.formatDateToString(currentState.note.updatedAt),
                         fontSize = 12.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -113,8 +129,8 @@ fun CreateNoteScreen(
                             .fillMaxWidth()
                             .padding(horizontal = 8.dp)
                             .weight(1f),
-                        value = currentState.content,
-                        onValueChange = { viewModel.processCommand(CreateNoteCommand.InputContent(it)) },
+                        value = currentState.note.content,
+                        onValueChange = { viewModel.processCommand(EditNoteCommand.InputContent(it)) },
                         colors = TextFieldDefaults.colors(
                             focusedContainerColor = Color.Transparent,
                             unfocusedContainerColor = Color.Transparent,
@@ -138,10 +154,10 @@ fun CreateNoteScreen(
                             .padding(horizontal = 24.dp)
                             .fillMaxWidth(),
                         onClick = {
-                            viewModel.processCommand(CreateNoteCommand.Save)
+                            viewModel.processCommand(EditNoteCommand.Save)
                         },
                         shape = RoundedCornerShape(10.dp),
-                        enabled = currentState.isSaveEnable,
+                        enabled = currentState.isSafeEnabled,
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.primary,
                             disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
@@ -157,10 +173,12 @@ fun CreateNoteScreen(
             }
         }
 
-        CreateNoteState.Finished -> {
+        EditNoteState.Finished -> {
             LaunchedEffect(Unit) {
                 onFinished()
             }
         }
+
+        EditNoteState.Initial -> {}
     }
 }
