@@ -106,7 +106,7 @@ sealed interface EditNoteCommand {
 
 sealed interface EditNoteState {
 
-    data object Initial: EditNoteState
+    data object Initial : EditNoteState
     data class Editing(
         val note: Note
     ) : EditNoteState {
