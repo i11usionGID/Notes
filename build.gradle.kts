@@ -44,15 +44,29 @@ android {
 
 dependencies {
 
+    //Room
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
+
+    //Hilt
     implementation(libs.hilt.android)
     implementation(libs.androidx.hilt.navigation.compose)
     ksp(libs.hilt.android.compiler)
+
+    //Navigation
     implementation(libs.androidx.navigation.compose)
+
+    //Serialization
     implementation(libs.kotlinx.serialization.json)
+
+    //ViewModel
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+
+    //Coil
+    implementation(libs.coil3.coil.compose)
+    implementation(libs.coil.network.okhttp)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

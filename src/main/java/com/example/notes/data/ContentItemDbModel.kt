@@ -1,6 +1,5 @@
 package com.example.notes.data
 
-import com.example.notes.domain.ContentItem
 import kotlinx.serialization.Serializable
 
 @Serializable
