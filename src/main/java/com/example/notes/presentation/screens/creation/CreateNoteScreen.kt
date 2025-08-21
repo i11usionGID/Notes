@@ -153,7 +153,8 @@ fun CreateNoteScreen(
                     )
                     Button(
                         modifier = Modifier
-                            .fillMaxWidth(),
+                            .fillMaxWidth()
+                            .padding(horizontal = 24.dp),
                         onClick = {
                             viewModel.processCommand(CreateNoteCommand.Save)
                         },
